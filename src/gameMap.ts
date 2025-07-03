@@ -7,10 +7,23 @@ export const chebyshevDistance: DistanceMethod = (x1: number, y1: number, x2: nu
 };
 
 export enum TileType {
-  Empty = 0,
-  Wall = 1,
-  // weapon
-  // enemy
+  Space,
+  Mount, // 障碍物
+  Water, // 障碍物
+  Flag, //龙旗据点
+  SmallCity, // 中立城寨1级
+  MiddleCity, // 中立城寨2级
+  BigCity, // 中立城寨3级
+  Base,
+  LVBU,
+  ZHAOYUN,
+  GUANYU,
+  LIUBEI,
+  CAOCAO,
+  SUNQUAN,
+  ZHUGELIANG,
+  SIMAYI,
+  ZHOUYU
 }
 
 /**
@@ -59,7 +72,7 @@ export class GameMap {
   }
 
   isObstacle(x: number, y: number): boolean {
-    return !this.isValidPosition(x, y) || this.getTile(x, y) === TileType.Wall;
+    return !this.isValidPosition(x, y) || this.getTile(x, y) === TileType.Water || this.getTile(x, y) === TileType.Mount;
   }
 
   setTile(x: number, y: number, value: TileType): boolean {
@@ -189,60 +202,6 @@ export class GameMap {
         }
       }
     }
-
     return null;
-  }
-
-  canDirectMove(startX: number, startY: number, endX: number, endY: number): boolean {
-    // 如果起点和终点是同一个格子，则视线没有被“中间”的墙遮挡
-    if (startX === endX && startY === endY) {
-      return true;
-    }
-
-    let currentX = startX;
-    let currentY = startY;
-
-    const dx = Math.abs(endX - currentX);
-    const dy = -Math.abs(endY - currentY); // Bresenham中通常dy为负
-
-    const sx = currentX < endX ? 1 : -1;
-    const sy = currentY < endY ? 1 : -1;
-
-    let error = dx + dy; // error = dx - abs(dy)
-
-    while (true) {
-      // 检查当前格子 (currentX, currentY)
-      // 我们不把起点格子本身视为对从该点发出的视线的遮挡物。
-      // 但路径上的任何其他格子（包括终点格子）如果是墙，则视为遮挡。
-      if (currentX !== startX || currentY !== startY) {
-        if (this.getTile(currentX, currentY) === TileType.Wall) {
-          return false; // 视线被墙壁遮挡
-        }
-      }
-
-      // 到达终点
-      if (currentX === endX && currentY === endY) {
-        break;
-      }
-
-      const e2 = 2 * error;
-
-      if (e2 >= dy) { // error + error >= dy (dy是负数) -> error >= dy/2
-        if (currentX === endX) {
-          break;
-        } // 防止超出终点（主要在单轴移动时）
-        error += dy;
-        currentX += sx;
-      }
-
-      if (e2 <= dx) { // error + error <= dx (dx是正数) -> error <= dx/2
-        if (currentY === endY) {
-          break;
-        } // 防止超出终点
-        error += dx;
-        currentY += sy;
-      }
-    }
-    return true; // 视线未被遮挡
   }
 }

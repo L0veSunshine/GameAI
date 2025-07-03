@@ -1237,8 +1237,7 @@ export class Agent implements IAgent {
         }
       }
     }
-    const availablePosition = Array.from(new Set(reachable.map(p => JSON.stringify(p)))).map(s => JSON.parse(s));
-    return availablePosition.filter(p => gameMap.canDirectMove(this.position.x, this.position.y, p.x, p.y));
+    return Array.from(new Set(reachable.map(p => JSON.stringify(p)))).map(s => JSON.parse(s));
   }
 
 
